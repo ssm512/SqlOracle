@@ -219,7 +219,25 @@ SELECT              EMPLOYEE_ID                                사번
     FROM            EMPLOYEES
     ;
     
-    
+SELECT      TO_CHAR(SYSDATE, 'YYYY')  || '年 '
+        ||  TO_CHAR(SYSDATE, 'MM')    || '月 '
+        ||  TO_CHAR(SYSDATE, 'DD')    || '日 '
+        ||  TO_CHAR(SYSDATE, 'HH24')  || '時 '
+        ||  TO_CHAR(SYSDATE, 'MI')    || '年 '
+        ||  TO_CHAR(SYSDATE, 'SS')    || '秒 ' 
+        ||  CASE TO_CHAR(SYSDATE, 'DY') 
+                WHEN    '일'         THEN '日'
+                WHEN    '월'         THEN '月'
+                WHEN    '화'         THEN '火'
+                WHEN    '수'         THEN '水'
+                WHEN    '목'         THEN '木'
+                WHEN    '금'         THEN '金'
+                WHEN    '토'         THEN '土'
+            END
+                                      || '曜日 ' 
+        ||  DECODE (TO_CHAR(SYSDATE, 'AM '), '오전', '午前'
+                                                  , '午後'  )
+FROM DUAL;
 /* 내가 한거
 ALTER SESSION SET NLS_DATE_FORMAT='YYYY-MM-DD HH24:MI:SS';
 SELECT  TO_CHAR(SYSDATE, 'YYYY') || '年' || 
@@ -234,7 +252,7 @@ SELECT  TO_CHAR(SYSDATE, 'YYYY') || '年' ||
 ---------------------------------------------------
 -- 집계함수 : AGGREGATE 함수
 -- 모든 집계는 NULL 값은 포함하지 않는다
--- SUM(), AVG(), MIN(), MAX(), COUNT(), VARIANCE()
+-- SUM(), AVG(), MIN(), MAX(), COUNT(), STDDEV()-표준편차, VARIANCE()-분산
 -- 그룹핑 : GROUP BY
 -- ~ 별 인원수
 
@@ -285,15 +303,34 @@ FROM            EMPLOYEES;           --11
 
 
 -- 직원이 근무하는 부서의 수: 부서장이 있는 부서수 : DEPARTMENTS
-SELECT COUNT(MANAGER_ID)
-FROM       DEPARTMENTS;
+SELECT COUNT(DEPARTMENT_ID)
+FROM       DEPARTMENTS
+WHERE       MANAGER_ID IS NOT NULL
+;
+
+-- 
+SELECT          7 / 2,
+                ROUND(156.456,2), ROUND(156.456,-2), 
+                TRUNC(156.456,2), TRUNC(156.456,-2)
+    FROM DUAL;
+
 -- 직원수, 월급합, 월급 평균, 최대월급, 최소월급
 SELECT COUNT(EMPLOYEE_ID)       직원수
        , SUM(SALARY)            월급합
-       , AVG(SALARY)            "월급 평균"
+       , ROUND(AVG(SALARY),3)   "월급 평균"
        , MAX(SALARY)            최대월급
        , MIN(SALARY)            "최소 월급"
 FROM        EMPLOYEES;
+
+---------------------------------------------------
+/*
+ SQL문 실행순서
+1. FROM
+2. WHERE
+3. SELECT
+4. ORDER BY
+*/
+---------------------------------------------------
 -- 부서 60번 부서 인원수, 월급합, 월급 평균
 SELECT          COUNT(DEPARTMENT_ID)
                 , SUM(SALARY)
@@ -301,12 +338,33 @@ SELECT          COUNT(DEPARTMENT_ID)
 FROM            EMPLOYEES
 WHERE           DEPARTMENT_ID = 60
 ;
--- 부서 50, 60, 80번 부서가 아닌 인원수, 월급합, 월급 평균
+-- 부서 50, 60, 80번 부서가 아닌 인원수, 월급합, 월급 평균, NULL 3명제외됨
 SELECT          COUNT(DEPARTMENT_ID)
                 , SUM(SALARY)
-                , AVG(SALARY)
+                , ROUND(AVG(SALARY), 3)
 FROM            EMPLOYEES
 WHERE           DEPARTMENT_ID != 50
 AND             DEPARTMENT_ID != 60
 AND             DEPARTMENT_ID != 80
 ;
+
+SELECT          COUNT(DEPARTMENT_ID)
+                , SUM(SALARY)
+                , ROUND(AVG(SALARY), 3)
+FROM            EMPLOYEES
+WHERE           DEPARTMENT_ID NOT IN (50, 60, 80)
+;
+
+------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
