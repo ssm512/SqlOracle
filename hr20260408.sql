@@ -473,7 +473,7 @@ HAVING              MAX(SALARY) >= 14000
 ORDER BY            DEPARTMENT_ID
 ;
 
--- 부서별 모으고, 같은 부서는 직업별 인원수, 월급평균
+-- 부서별 모으고, 같은 부서는 직업별 인원수, 월급평균 -- 추가 과제 JOB-TITLE 표시
 SELECT              DEPARTMENT_ID                       "부서 번호"
                     , JOB_ID                            "담당 업무"
                     , CASE JOB_ID
@@ -501,8 +501,8 @@ SELECT              DEPARTMENT_ID                       "부서 번호"
                     , ROUND(AVG(SALARY),2)              "업무별 월급평균"
 FROM                EMPLOYEES
 -- GROUP BY            DEPARTMENT_ID, JOB_ID
---GROUP BY            ROLLUP(DEPARTMENT_ID, JOB_ID)
-GROUP BY            CUBE(DEPARTMENT_ID, JOB_ID)
+--GROUP BY            ROLLUP(DEPARTMENT_ID, JOB_ID) -- ROLLUP은 DEPARTMENT_ID 기준으로 한번더 통계를 내줌
+GROUP BY            CUBE(DEPARTMENT_ID, JOB_ID) -- CUBE는 DEPARTMENT_ID 기준 통계이후, JOB_ID으로 통계를 또 내줌
 ORDER BY            DEPARTMENT_ID, JOB_ID
 ;
 
