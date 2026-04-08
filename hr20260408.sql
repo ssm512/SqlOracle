@@ -356,15 +356,153 @@ WHERE           DEPARTMENT_ID NOT IN (50, 60, 80)
 ;
 
 ------------------------------------------------------------------------------
+-- 부서별 사원수
+SELECT          DEPARTMENT_ID               부서번호
+                , COUNT(EMPLOYEE_ID)        사원수
+FROM            EMPLOYEES
+; -- ORA-00937: 단일 그룹의 그룹 함수가 아닙니다
+    -- GROUP BY 절이 필요하다
+    -- 일반칼럼과 집계함수를 동시에 사용하면 ~별 통계로 해석한다
 
+-- 일반 칼럼과 집계함수는 같이 쓸 수 없다, 같이 쓸려면 GROUP BY 써야됨
+SELECT          DEPARTMENT_ID               부서번호
+                , COUNT(EMPLOYEE_ID)        사원수
+FROM            EMPLOYEES       -- FROM절
+-- WHERE
+GROUP BY        DEPARTMENT_ID   -- GROUP BY절
+-- HAVING
+ ORDER BY       DEPARTMENT_ID
+;
+-- SELCT문의 Full set 순서 : SELECT -> FROM ->  WHERE -> GROUP BY -> HAVING -> ORDER BY
+-- 해석 순서 FROM/JOIN -> WHERE -> GROUP BY -> HAVING -> SELECT -> ORDER BY
 
+-- 부서별 월급합, 월급 평균
+SELECT              DEPARTMENT_ID                   부서번호
+                    , SUM(SALARY)                   월급합
+                    , ROUND(AVG(SALARY),3)          월급평균
+FROM                EMPLOYEES
+GROUP BY            DEPARTMENT_ID
+ORDER BY            DEPARTMENT_ID
+;
 
+----------------------------------------------------
+-- 7교시
 
+-- 부서별 사원수 통계
+SELECT          DEPARTMENT_ID
+                , COUNT(EMPLOYEE_ID)
+    FROM        EMPLOYEES
+    --GROUP BY    DEPARTMENT_ID
+    GROUP BY    ROLLUP(DEPARTMENT_ID)
+    ORDER BY    DEPARTMENT_ID
+    ;
+-- 부서별 인원수, 월급합
+SELECT          DEPARTMENT_ID
+                , COUNT(EMPLOYEE_ID)
+                , SUM(SALARY)
+    FROM        EMPLOYEES
+    GROUP BY    DEPARTMENT_ID
+    ORDER BY    DEPARTMENT_ID
+    ;
+-- 부서별 인원수가 5명 이상인 부서번호
+SELECT          DEPARTMENT_ID
+                , COUNT(EMPLOYEE_ID) 
+    FROM        EMPLOYEES
+    --WHERE       COUNT(EMPLOYEE_ID) >= 5 -- 그룹 함수는 허가되지 않습니다. WHERE 문에서는 집계함수 사용 불가능
+    GROUP BY    DEPARTMENT_ID 
+    HAVING      COUNT(EMPLOYEE_ID) >= 5
+    ORDER BY    DEPARTMENT_ID
+    ;
 
+-- 부서별 월급 총계가 2000이상인 부서번호
+SELECT          DEPARTMENT_ID
+                , SUM(SALARY)           월급총계
+FROM            EMPLOYEES
+GROUP BY        DEPARTMENT_ID
+HAVING          SUM(SALARY) >= 2000     -- 월급총계를 식별자로 사용할수 없는 이유가 having이 select보다 먼저 실행이 되기 때문 
+ORDER BY        DEPARTMENT_ID
+;
+-- JOB_ID 별 인원수
+SELECT          JOB_ID
+                , COUNT(EMPLOYEE_ID)
+    FROM        EMPLOYEES
+    GROUP BY    JOB_ID
+    ORDER BY    JOB_ID
+    ;
+    -- JOB-TITLE별 인원수 , DECODE 및 CASE 로 구현해볼것 ( JOBS TABLE에서 끌어오는건 나중에 아직 안배움 )
+SELECT          JOB_ID
+                , DECODE (JOB_ID , 'AD_PRES'        , 'President'
+                                 , 'AD_VP'          , 'Administration Vice President'
+                                 , 'AD_ASST'        , 'Administration Assistant'
+                                 , 'FI_MGR'         , 'Finance Manager'
+                                 , 'FI_ACCOUNT'     , 'Accountant'
+                                 , 'AC_MGR'         , 'Accounting Manager'
+                                 , 'AC_ACCOUNT'     , 'Public Accountant'
+                                 , 'SA_MAN'         , 'Sales Manager'
+                                 , 'SA_REP'         , 'Sales Representative'
+                                 , 'PU_MAN'         , 'Purchasing Manager'
+                                 , 'PU_CLERK'       , 'Purchasing Clerk'
+                                 , 'ST_MAN'         , 'Stock Manager'
+                                 , 'ST_CLERK'       , 'Stock Clerk'
+                                 , 'SH_CLERK'       , 'Shipping Clerk'
+                                 , 'IT_PROG'        , 'Programmer'
+                                 , 'MK_MAN'         , 'Marketing Manager'
+                                 , 'MK_REP'         , 'Marketing Representative'
+                                 , 'HR_REP'         , 'Human Resources Representative'
+                                 , 'PR_REP'         , 'Public Relations Representative'
+                                                    , 'NO DATA'
+                )     "JOB-TITLE"
+                , COUNT(EMPLOYEE_ID)
+    FROM        EMPLOYEES
+    GROUP BY    JOB_ID
+    ORDER BY    JOB_ID;
+-- 입사일 기준 월별 인원수, 2017년 기준
+SELECT             TO_CHAR(HIRE_DATE, 'MM')
+                    , COUNT(EMPLOYEE_ID)
+FROM               EMPLOYEES
+WHERE              TO_CHAR(HIRE_DATE, 'YYYY') = '2017'
+GROUP BY           TO_CHAR(HIRE_DATE, 'MM')
+ORDER BY           TO_CHAR(HIRE_DATE, 'MM')
+;
+-- 부서별 최대 월급이 14000이상인 부서의 부서번호와 최대 월급
+SELECT              DEPARTMENT_ID
+                    , MAX(SALARY)
+FROM                EMPLOYEES
+GROUP BY            DEPARTMENT_ID
+HAVING              MAX(SALARY) >= 14000
+ORDER BY            DEPARTMENT_ID
+;
 
-
-
-
-
-
+-- 부서별 모으고, 같은 부서는 직업별 인원수, 월급평균
+SELECT              DEPARTMENT_ID                       "부서 번호"
+                    , JOB_ID                            "담당 업무"
+                    , CASE JOB_ID
+                     WHEN   'AD_PRES'      THEN   'President'
+                     WHEN   'AD_VP'        THEN   'Administration Vice President'
+                     WHEN   'AD_ASST'      THEN   'Administration Assistant'
+                     WHEN   'FI_MGR'       THEN   'Finance Manager'
+                     WHEN   'FI_ACCOUNT'   THEN   'Accountant'
+                     WHEN   'AC_MGR'       THEN   'Accounting Manager'
+                     WHEN   'AC_ACCOUNT'   THEN   'Public Accountant'
+                     WHEN   'SA_MAN'       THEN   'Sales Manager'
+                     WHEN   'SA_REP'       THEN   'Sales Representative'
+                     WHEN   'PU_MAN'       THEN   'Purchasing Manager'
+                     WHEN   'PU_CLERK'     THEN   'Purchasing Clerk'
+                     WHEN   'ST_MAN'       THEN   'Stock Manager'
+                     WHEN   'ST_CLERK'     THEN   'Stock Clerk'
+                     WHEN   'SH_CLERK'     THEN   'Shipping Clerk'
+                     WHEN   'IT_PROG'      THEN   'Programmer'
+                     WHEN   'MK_MAN'       THEN   'Marketing Manager'
+                     WHEN   'MK_REP'       THEN   'Marketing Representative'
+                     WHEN   'HR_REP'       THEN   'Human Resources Representative'
+                     WHEN   'PR_REP'       THEN   'Public Relations Representative'
+                    END                                 "업무 이름"
+                    , COUNT(EMPLOYEE_ID)                "업무별 인원수"
+                    , ROUND(AVG(SALARY),2)              "업무별 월급평균"
+FROM                EMPLOYEES
+-- GROUP BY            DEPARTMENT_ID, JOB_ID
+--GROUP BY            ROLLUP(DEPARTMENT_ID, JOB_ID)
+GROUP BY            CUBE(DEPARTMENT_ID, JOB_ID)
+ORDER BY            DEPARTMENT_ID, JOB_ID
+;
 
