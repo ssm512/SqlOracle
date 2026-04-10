@@ -93,6 +93,7 @@ INSERT INTO ex4_1 VALUES ('111-3333');
 SELECT *
 FROM ex4_1;
 
+-- 단 이때 원 TABLE의 DATA는 변경되지 않음 명심할 것
 SELECT LPAD(phone_num, 12, '(02)')
 FROM ex4_1;
 
@@ -124,11 +125,11 @@ FROM employees;
 1) TO_CHAR (숫자 혹은 날짜, format)
 https://thebook.io/006696/0110/
 SELECT TO_CHAR(123456789, '999,999,999'),
-       TO_CHAR(1234567, '99,999,999'),
-       TO_CHAR(1234567, '00,000,000'),
+       TO_CHAR(1234567, '99,999,999'),          -- FORMAT만 지정하는 거임, ','로 숫자 구분을 해주는겨
+       TO_CHAR(1234567, '00,000,000'),          -- 뒤 00과 비교해서 모자란  0 으로 채움자릿수만큼 
        TO_CHAR(123.4567, '99,990.000'),         -- 소수이하 3자리로 자동 반올림
-       TO_CHAR(123456789, '$999,999,999'),
-       TO_CHAR(123456789, 'L999,999,999')
+       TO_CHAR(123456789, '$999,999,999'),      --  달러 표시 추가
+       TO_CHAR(123456789, 'L999,999,999')          -- 원 표시 추가, 한국에서는 원이고, 일본에서는 엔화 표시가 추가됨
 FROM DUAL; 
 --    123,456,789	  1,234,567	 01,234,567	 00,000,123	 $123,456,789	        ￦123,456,789
 
@@ -207,7 +208,7 @@ ORDER BY        사번 ASC, 업무시작일 ASC
 ;
 
 --사번, 직원명, 업무시작일, 업무종료일, 담당 업무명, 부서명    해볼것
-SELECT          
+SELECT          사번, 업무시작일, 업무종료일, 담당업무, 부서번호, d.department_name
 FROM            (
 SELECT          EMPLOYEE_ID                             사번
                 , TO_CHAR(HIRE_DATE, 'YYYY-MM-DD')      업무시작일
@@ -222,7 +223,8 @@ SELECT          EMPLOYEE_ID                             사번
                 , JOB_ID                                담당업무
                 , DEPARTMENT_ID                         부서버호
 FROM            JOB_HISTORY H
-                )
+                ) A
+join            departments D ON A.부서번호 = D.department_id
 ORDER BY        사번 ASC, 업무시작일 ASC
 ;
 
