@@ -56,3 +56,98 @@ FROM            (
 )
 ORDER BY            사번
 ;
+
+
+-- 익명 프로시져
+SET SERVEROUTPUT ON;
+
+DECLARE
+    V_NAME      VARCHAR2(46);
+    V_SAL       NUMBER(8,2);
+BEGIN
+    V_NAME      := '카리나';
+    V_SAL       := 10000;
+    DBMS_OUTPUT.PUT_LINE(V_NAME);
+    DBMS_OUTPUT.PUT_LINE(V_SAL);
+    IF V_SAL >= 10000 THEN
+        DBMS_OUTPUT.PUT_LINE('GOOD');
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('NOT GOOD');
+    END IF;
+END;
+/
+    
+-- 107번 직원의 이름과 월급 조회
+CREATE OR REPLACE PROCEDURE GET_EMPSAL (IN_EMPID IN NUMBER)
+IS
+  V_NAME        VARCHAR2(46);
+  V_SAL         NUMBER(8,2);
+    BEGIN
+        SELECT  FIRST_NAME || ' ' || LAST_NAME, SALARY
+        INTO    V_NAME, V_SAL
+        FROM    EMPLOYEES
+        WHERE   EMPLOYEE_ID = IN_EMPID;
+        DBMS_OUTPUT.PUT_LINE('이름 : ' || V_NAME);
+        DBMS_OUTPUT.PUT_LINE('월급 : ' || V_SAL);
+    END;
+/
+
+-- 테스트
+SET SERVEROUTPUT ON;
+CALL GET_EMPSAL(107);
+
+
+-- 부서번호 입력, 해당 부서의 최고 월급자의 이름, 월급 출력
+CREATE OR REPLACE PROCEDURE GET_NAME_MAXSAL (
+    IN_DEPT_ID  IN  NUMBER,
+    O_NAME      OUT VARCHAR2,
+    O_SAL       OUT NUMBER
+)
+IS  
+    V_MAXSAL        NUMBER(8,2);
+    BEGIN
+        SELECT      MAX(SALARY)
+        INTO        V_MAXSAL
+        FROM        EMPLOYEES
+        WHERE       DEPARTMENT_ID = IN_DEPT_ID;
+        
+        SELECT      FIRST_NAME || ' ' || LAST_NAME
+                    , SALARY
+        INTO        O_NAME, O_SAL
+        FROM        EMPLOYEES
+        WHERE       SALARY  =   V_MAXSAL
+        AND         DEPARTMENT_ID = IN_DEPT_ID;
+        
+        DBMS_OUTPUT.PUT_LINE(O_NAME);
+        DBMS_OUTPUT.PUT_LINE(O_SAL);
+        
+    END;
+/    
+
+-- 테스트
+SET SERVEROUTPUT ON;
+VAR O_NAME VARCHAR2;
+VAR O_SAL   NUMBER;
+CALL GET_NAME_MAXSAL (50, :O_NAME, :O_SAL);
+PRINT O_NAME;
+PRINT O_SAL;
+
+--------------------------------------------------------------------
+-- 90번 부서 번호입력, 직원들 출력 - 결과라 여러줄인때 CURSOR를 사용해야 함
+CREATE OR REPLACE PROCEDURE GET_EMPLIST (
+    IN_DEPT_ID  IN  NUMBER,
+    O_CUR       OUT SYS_REFCURSOR
+)
+IS
+    BEGIN
+        OPEN        O_CUR   FOR
+            SELECT      EMPLOYEE_ID, FIRST_NAME, LAST_NAME, PHONE_NUMBER
+            FROM        EMPLOYEES
+            WHERE       DEPARTMENT_ID   =   IN_DEPT_ID;
+    END;
+/    
+
+--테스트
+VARIABLE        O_CUR   REFCURSOR;
+EXECUTE         GET_EMPlIST(50, :O_CUR)
+PRINT           O_CUR;
