@@ -105,11 +105,11 @@ sky계정 우클릭 -> 테이블 메뉴 클릭 -> 새 TABLE 클릭 -> TABLE1 생
 3. SCRIPT로 TABLE생성
 CREATE TABLE EMP7
 (
-  EMPID     NUMBER(8, 2)    NOT NULL 
+  EMPID     NUMBER(8, 2)    NOT NULL -- COLUMN 단위 제약 조건
 , ENAME     VARCHAR2(46)    NOT NULL
 , TEL       VARCHAR2(20) 
 , EMAIL     VARCHAR2(320) 
-, CONSTRAINT EMP7_PK PRIMARY KEY 
+, CONSTRAINT EMP7_PK PRIMARY KEY        -- TABLE 단위 제약 조건, 복합키 만들때 요런 형식임
   (
     EMPID 
   )
