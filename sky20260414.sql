@@ -74,6 +74,10 @@ COMMIT;
 
 SELECT * FROM STUDENT;
 
+DROP TABLE SCORES;      -- 자식 테이블(ENTITIY)을 먼저 삭제
+DROP TABLE STUDENT;     -- 부모 테이블을 나중에 삭제
+
+DROP TABLE STUDENT CASCADE CONSTRAINTS PURGE; -- 순서에 무관하게 삭제 가능
 
  성적     : 일련번호(PK), 교과목,   점수,   학번(FK)
  SCORES     SCID          SUBJECT   SCORE   STID
@@ -201,7 +205,7 @@ COMMIT;
  성적 : 학번, 국어, 영어, 수학, 총점, 평균, 석차 결과
  과목은 변경될 수 있다.
  
- -- ---------------------------------------------------------------------
+ ------------------------------------------------------------------------
  -- 조회
  -- 1. 학번, 이름, 점수(국어)
 1) 학번 이름
