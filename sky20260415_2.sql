@@ -172,3 +172,6 @@ INSERT INTO TABLE1 VALUES (7, 'D', 'ㅋㅋ')
 1행에 오류:
 ORA-00001: 무결성 제약 조건(SKY.SYS_C008414)에 위배됩니다
 
+SELECT COUNT(distinct zipcode) cnt FROM ZIPCODE;
+
+SELECT ZIPCODE, SIDO, GUGUN, DONG, nvl(BUNJI, ' '), SEQ  FROM ZIPCODE  WHERE DONG LIKE '%롯데백화점%';
