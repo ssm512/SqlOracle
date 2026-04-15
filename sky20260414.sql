@@ -204,13 +204,62 @@ COMMIT;
  -- ---------------------------------------------------------------------
  -- 조회
  -- 1. 학번, 이름, 점수(국어)
- SELECT     
+1) 학번 이름
+SELECT      stid            학번
+            , stname        이름
+FROM        STUDENT;
+2) 점수(국어)
+SELECT      stid
+            , score           "점수(국어)"
+FROM        scores
+WHERE       subject LIKE '국어';
+3) 1)+2)
+SELECT      T.STID          학번
+            , T.STNAME      이름
+            , S.SCID
+            , S.SCORE       점수
+FROM        SCORES  S JOIN STUDENT  T
+ON          S.STID = T.STID
+WHERE       S.SUBJECT LIKE '국어';
+;
  -- 2. 학번, 이름, 총점, 평균
+1) 총점, 평균
+SELECT      S.STID            학번
+            , SUM(S.SCORE)
+            , ROUND(AVG(S.SCORE), 2)
+FROM        SCORES S
+GROUP BY    S.STID;
+
+SELECT      S.STID            학번
+            , T.STNAME
+            , SUM(S.SCORE)
+            , ROUND(AVG(S.SCORE), 2)
+FROM        SCORES S JOIN STUDENT T ON S.STID=T.STID
+GROUP BY    S.STID, T.STNAME;
+
+
+
+ -- 3. 모든 학생의 학번, 이름, 총점, 평균 ( 점수가 NULL인 학생은 미응시 )
+SELECT      S.STID            학번
+            , T.STNAME
+            , CASE SUM(S.SCORE)
+            WHEN    NULL THEN '미응시'
+            WHEN     THEN  SUM(S.SCORE)
+            END
+            , ROUND(AVG(S.SCORE), 2)
+FROM        SCORES S RIGHT JOIN STUDENT T ON S.STID=T.STID
+GROUP BY    S.STID, T.STNAME;
  
- -- 3. 모든 학생의 학번, 이름, 총점, 평균
  
- -- 4. 점수가 NULL인 학생은 미응시
  
+SELECT      S.STID            학번
+            , T.STNAME
+            , SUM(S.SCORE)
+            , ROUND(AVG(S.SCORE), 2)
+FROM        SCORES S RIGHT JOIN STUDENT T ON S.STID=T.STID
+GROUP BY    S.STID, T.STNAME;
+ 
+ -- 4. 모든 학생의 학번, 이름, 총점, 평균, 등급, 석차
  
  
  
