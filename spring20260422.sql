@@ -113,3 +113,90 @@ INSERT INTO TUSER VALUES ('spring02', '1234', 'spring02', 'spring02A@green.com',
 commit;
 
 DELETE FROM tuser WHERE userid = '?';
+
+
+
+--------------------------------------------------------------------------------
+
+CREATE TABLE BOARD (
+    IDX            NUMBER(8,0) PRIMARY KEY,
+    MENU_ID        VARCHAR2(6)  REFERENCES MENUS (MENU_ID),
+    TITLE          VARCHAR2(300)   NOT NULL,
+    CONTENT        VARCHAR2(4000),
+    WRITER         VARCHAR2(12),
+    REGDATE        DATE     DEFAULT SYSDATE,
+    HIT            NUMBER(9,0)      DEFAULT 0
+);
+
+INSERT INTO board (
+    idx,
+    menu_id,
+    title,
+    content,
+    writer
+) VALUES ( 
+    1,
+    'MENU01',
+    'JAVA Hello',
+    '자바 게시판에 오신것을 환영합니다',
+    'java'
+);
+SELECT * FROM board;
+
+commit;
+
+SELECT
+    idx,
+    menu_id,
+    title,
+    content,
+    writer,
+    TO_CHAR(regdate, 'YYYY-MM-DD') REGDATE,
+    hit
+FROM
+    board
+ORDER BY    idx DESC;
+
+INSERT INTO board (
+    (SELECT NVL(MAX(IDX),0)+1 FROM BOARD)  IDX,
+    menu_id,
+    title,
+    content,
+    writer
+) VALUES ( 
+    1,
+    'MENU01',
+    'JAVA Hello',
+    '자바 게시판에 오신것을 환영합니다',
+    'java'
+);
+
+
+INSERT INTO board (
+    IDX,
+    menu_id,
+    title,
+    content,
+    writer
+) VALUES ( 
+    (SELECT NVL(MAX(IDX),0)+1 FROM BOARD),
+    'MENU02',
+    'JSP Hello',
+    'JSP 게시판에 오신것을 환영합니다',
+    'jsp'
+);
+
+commit;
+
+SELECT
+    idx,
+    menu_id,
+    title,
+    content,
+    writer,
+    TO_CHAR(regdate, 'YYYY-MM-DD') REGDATE,
+    hit
+FROM
+    board
+WHERE   menu_id = 'MENU01'
+ORDER BY    idx DESC;
