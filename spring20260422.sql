@@ -200,3 +200,23 @@ FROM
     board
 WHERE   menu_id = 'MENU01'
 ORDER BY    idx DESC;
+
+
+---------------------------------------------------------------------------------
+
+20260506
+
+SELECT
+		    IDX,
+		    MENU_ID,
+		    TITLE,
+		    CONTENT,
+		    WRITER,
+		    TO_CHAR(REGDATE, 'YYYY-MM-DD') REGDATE,
+		    HIT
+		FROM
+		    BOARD
+		WHERE   idx = 3;
+        
+        
+select * from board;
