@@ -220,3 +220,49 @@ SELECT
         
         
 select * from board;
+
+-----------------------------------------------------------------------------------
+20260507
+
+INSERT INTO menus (
+    menu_id,
+    menu_name,
+    menu_seq
+) VALUES ( (SELECT 'MENU' || TRIM(TO_CHAR(NVL(MAX(SUBSTR(menu_id, 5,2)),0) + 1, '00')) FROM MENUS),
+           :v0,
+           (SELECT NVL(MAX(menu_seq),0)+1 FROM MENUS)
+);
+
+INSERT INTO board (
+    idx,
+    menu_id,
+    title,
+    content,
+    writer
+) VALUES ( 
+    (SELECT NVL(MAX(IDX),0)+1 FROM BOARD),
+    'MENU02',
+    'JSP Hello',
+    'JSP 게시판에 오신것을 환영합니다',
+    'jsp'
+);
+
+INSERT INTO board (
+    idx,
+    menu_id,
+    title,
+    content,
+    writer
+) VALUES ( 
+    (SELECT NVL(MAX(IDX),0)+1 FROM BOARD),
+    'MENU01',
+    'JAVA 게시판 새로 추가',
+    '추가한거',
+    'SEA'
+);
+
+commit;
+
+SELECT MENU_NAME FROM MENUS WHERE menu_id='MENU09';
+
+se
