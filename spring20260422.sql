@@ -266,3 +266,17 @@ commit;
 SELECT MENU_NAME FROM MENUS WHERE menu_id='MENU09';
 
 se
+
+
+------------------------------------------------------------------------
+20260508
+board2-1 연습
+
+SELECT 
+    USERID,
+    PASSWORD,
+    USERNAME,
+    EMAIL,
+    UPOINT,
+    REGDATE
+FROM TUSER;
