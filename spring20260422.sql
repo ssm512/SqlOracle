@@ -340,3 +340,64 @@ CREATE INDEX IDX_BOARD_MENU_IDX
 ON BOARD (MENU_ID, IDX DESC);
 
 이 인덱스는 MENU_ID별 게시글 목록을 최신순으로 가져올 때 유리합니다.
+
+
+----------------------------------------------------------------------------------
+20260512
+
+SELECT
+    idx,
+    menu_id,
+    title,
+    content,
+    writer,
+    regdate,
+    hit
+FROM
+    board
+WHERE
+    IDX = '200'
+;
+
+INSERT INTO board (
+    idx,
+    menu_id,
+    title,
+    content,
+    writer
+) VALUES ( 
+    (SELECT NVL(MAX(IDX),0)+1 FROM BOARD),
+    'MENU02',
+    'JSP Hello',
+    'JSP 게시판에 오신것을 환영합니다',
+    'jsp'
+);
+
+UPDATE BOARD
+SET     WRITER = 'admin'
+WHERE   MENU_ID = 'MENU01'
+  AND   WRITER  IN  ('user194', 'user195', 'user196', 'user197', 'user198', 'user199', 'user200');
+  
+  commit;
+  
+--------------------------------------------------------------
+20260513
+
+SELECT * FROM BOARD WHERE MENU_ID='MENU01';
+
+서브쿼리 작성하는 순서 예시
+SELECT MAX(IDX) 
+SELECT NVL(MAX(IDX),0)+1
+(SELECT NVL(MAX(IDX),0)+1 FROM BOARD)
+
+UPDATE board
+SET
+    writer = :v0
+WHERE
+    idx = :v1
+AND
+    menu_id = :v2;
+
+COMMIT;
+
+    
